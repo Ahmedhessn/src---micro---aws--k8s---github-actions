@@ -1,7 +1,9 @@
 package com.visualpathit.account.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -14,8 +16,6 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,17 +39,17 @@ public class ElasticSearchController {
 
         try (RestHighLevelClient client = ElasticsearchUtil.getRestHighLevelClient()) {
             for (User user : users) {
+                Map<String, Object> doc = new HashMap<>();
+                doc.put("name", user.getUsername());
+                doc.put("DOB", user.getDateOfBirth());
+                doc.put("fatherName", user.getFatherName());
+                doc.put("motherName", user.getMotherName());
+                doc.put("gender", user.getGender());
+                doc.put("nationality", user.getNationality());
+                doc.put("phoneNumber", user.getPhoneNumber());
+
                 IndexRequest indexRequest = new IndexRequest("users", "_doc", String.valueOf(user.getId()))
-                        .source(XContentFactory.jsonBuilder()
-                                .startObject()
-                                .field("name", user.getUsername())
-                                .field("DOB", user.getDateOfBirth())
-                                .field("fatherName", user.getFatherName())
-                                .field("motherName", user.getMotherName())
-                                .field("gender", user.getGender())
-                                .field("nationality", user.getNationality())
-                                .field("phoneNumber", user.getPhoneNumber())
-                                .endObject());
+                        .source(doc);
 
                 IndexResponse response = client.index(indexRequest, RequestOptions.DEFAULT);
                 String res = response.getResult().toString();
@@ -77,11 +77,11 @@ public class ElasticSearchController {
     @RequestMapping(value = "/rest/users/update/{id}", method = RequestMethod.GET)
     public String update(@PathVariable final String id, final Model model) throws IOException {
         try (RestHighLevelClient client = ElasticsearchUtil.getRestHighLevelClient()) {
+            Map<String, Object> patch = new HashMap<>();
+            patch.put("gender", "male");
+
             UpdateRequest updateRequest = new UpdateRequest("users", "_doc", id)
-                    .doc(XContentFactory.jsonBuilder()
-                            .startObject()
-                            .field("gender", "male")
-                            .endObject());
+                    .doc(patch);
 
             UpdateResponse updateResponse = client.update(updateRequest, RequestOptions.DEFAULT);
             System.out.println(updateResponse.status());

@@ -10,7 +10,7 @@ WORKDIR /app
 COPY pom.xml ./
 COPY src ./src
 
-RUN mvn -q -DskipTests package
+RUN mvn -q -Dmaven.test.skip=true package
 
 FROM tomcat:10.1-jre17
 RUN rm -rf /usr/local/tomcat/webapps/*
