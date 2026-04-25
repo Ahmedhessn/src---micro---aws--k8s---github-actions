@@ -13,7 +13,7 @@
 	<rabbit:annotation-driven />
 
 	<rabbit:connection-factory id="connectionFactory" host="${rabbitmq.address}"
-		port="${rabbitmq.port}" username="${rabbitmq.username}"
+		port="${rabbitmq.server.port}" username="${rabbitmq.username}"
 		password="${rabbitmq.password}" />
 
 	<rabbit:admin connection-factory="connectionFactory" />
