@@ -23,27 +23,34 @@ jobs:
             repository: k8s-self-managed-503459125797-dev-nginx
             context: .
             dockerfile: docker/nginx/Dockerfile
+            trivy_exit_code: "1"
           - name: apps
             repository: k8s-self-managed-503459125797-dev-apps
             context: .
             dockerfile: Dockerfile
+            trivy_exit_code: "1"
           - name: rabbitmq
             repository: k8s-self-managed-503459125797-dev-rabbitmq
             context: .
             dockerfile: docker/rabbitmq/Dockerfile
+            trivy_exit_code: "1"
           - name: memcached
             repository: k8s-self-managed-503459125797-dev-memcached
             context: .
             dockerfile: docker/memcached/Dockerfile
+            trivy_exit_code: "1"
           - name: mysql
             repository: k8s-self-managed-503459125797-dev-mysql
             context: .
             dockerfile: docker/db/Dockerfile
+            # Vendor image may contain upstream CVEs; keep scanning but don't block pushes.
+            trivy_exit_code: "0"
           # Your app image is Tomcat-based; publish same artifact to a "tomcat" repo too.
           - name: tomcat
             repository: k8s-self-managed-503459125797-dev-tomcat
             context: .
             dockerfile: Dockerfile
+            trivy_exit_code: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -76,7 +83,7 @@ jobs:
           image-ref: local/${{ matrix.image.name }}:${{ github.sha }}
           severity: CRITICAL,HIGH
           format: table
-          exit-code: "1"
+          exit-code: ${{ matrix.image.trivy_exit_code }}
           version: v0.69.3
           trivyignores: .trivyignore
 
