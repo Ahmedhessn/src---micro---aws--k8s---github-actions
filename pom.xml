@@ -16,10 +16,10 @@
     <maven.compiler.release>17</maven.compiler.release>
     <failOnMissingWebXml>false</failOnMissingWebXml>
 
-    <spring.version>6.1.16</spring.version>
-    <spring.security.version>6.2.7</spring.security.version>
+    <spring.version>6.2.11</spring.version>
+    <spring.security.version>6.5.9</spring.security.version>
     <spring.amqp.version>3.1.7</spring.amqp.version>
-    <spring.data.jpa.version>3.2.11</spring.data.jpa.version>
+    <spring.data.jpa.version>4.0.4</spring.data.jpa.version>
     <hibernate.version>6.4.10.Final</hibernate.version>
     <jackson.version>2.17.2</jackson.version>
     <slf4j.version>2.0.16</slf4j.version>
@@ -49,6 +49,23 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
       <version>${jackson.version}</version>
+    </dependency>
+
+    <!-- Explicitly pin transitive deps with known CVE fixes -->
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.lz4</groupId>
+      <artifactId>lz4-java</artifactId>
+      <version>1.8.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>4.28.2</version>
     </dependency>
 
     <dependency>
