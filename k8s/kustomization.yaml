@@ -1,26 +1,22 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
 namespace: vprofile
-
 resources:
-  - mysql.yaml
-  - memcached.yaml
-  - rabbitmq.yaml
-  - apps.yaml
-  - ingress.yaml
-
+- mysql.yaml
+- memcached.yaml
+- rabbitmq.yaml
+- apps.yaml
+- ingress.yaml
 images:
-  - name: k8s-self-managed-503459125797-dev-apps
-    newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-apps
-    newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
-  - name: k8s-self-managed-503459125797-dev-rabbitmq
-    newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-rabbitmq
-    newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
-  - name: k8s-self-managed-503459125797-dev-memcached
-    newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-memcached
-    newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
-  - name: k8s-self-managed-503459125797-dev-mysql
-    newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-mysql
-    newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
-
+- name: k8s-self-managed-503459125797-dev-apps
+  newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-apps
+  newTag: d5e0d5fb8095a4c9a76846c0006070f5b4231321-24938724421-1
+- name: k8s-self-managed-503459125797-dev-rabbitmq
+  newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-rabbitmq
+  newTag: d5e0d5fb8095a4c9a76846c0006070f5b4231321-24938724421-1
+- name: k8s-self-managed-503459125797-dev-memcached
+  newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-memcached
+  newTag: d5e0d5fb8095a4c9a76846c0006070f5b4231321-24938724421-1
+- name: k8s-self-managed-503459125797-dev-mysql
+  newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-mysql
+  newTag: d5e0d5fb8095a4c9a76846c0006070f5b4231321-24938724421-1
