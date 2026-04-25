@@ -93,9 +93,6 @@ jobs:
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
           tags: |
-            # ECR repo has immutable tags enabled:
-            # - avoid static tags (e.g. dev/latest)
-            # - avoid reusing the raw commit SHA on re-runs
             ${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:${{ github.sha }}-${{ github.run_attempt }}
 
       - name: Install cosign
