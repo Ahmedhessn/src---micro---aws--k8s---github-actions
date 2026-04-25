@@ -38,7 +38,7 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-mysql
+          image: k8s-self-managed-503459125797-dev-mysql
           ports:
             - containerPort: 3306
           envFrom:

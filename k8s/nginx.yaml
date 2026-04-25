@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-nginx
+          image: k8s-self-managed-503459125797-dev-nginx
           ports:
             - containerPort: 80
           volumeMounts:

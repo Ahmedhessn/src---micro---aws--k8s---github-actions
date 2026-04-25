@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: rabbitmq
-          image: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-rabbitmq
+          image: k8s-self-managed-503459125797-dev-rabbitmq
           ports:
             - containerPort: 5672
             - containerPort: 15672

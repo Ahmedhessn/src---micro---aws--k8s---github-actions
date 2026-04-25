@@ -12,16 +12,16 @@ This folder contains **plain Kubernetes YAML** manifests to deploy the stack.
 - `kustomization.yaml`: simple kustomize entrypoint (optional)
 
 ## Before applying
-1. Replace the image placeholders:
+1. Replace the image placeholders in `k8s/kustomization.yaml`:
    - `REPLACE_AWS_ACCOUNT_ID`
    - `REPLACE_AWS_REGION`
-   - `REPLACE_IMAGE_TAG` (use the tag you pushed, or prefer a digest)
+   - `REPLACE_IMAGE_TAG`
 2. (Recommended) Replace MySQL credentials in `mysql.yaml` secret.
 
 ## Apply
 ```bash
 kubectl apply -f k8s/namespace.yaml
-kubectl apply -f k8s/
+kubectl apply -k k8s/
 ```
 
 ## Notes

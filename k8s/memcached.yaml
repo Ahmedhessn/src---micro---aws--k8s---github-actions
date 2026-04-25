@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: memcached
-          image: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-memcached
+          image: k8s-self-managed-503459125797-dev-memcached
           ports:
             - containerPort: 11211
           args: ["-m", "256", "-I", "2m"]

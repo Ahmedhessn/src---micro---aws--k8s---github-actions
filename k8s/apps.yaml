@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: apps
-          image: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-apps
+          image: k8s-self-managed-503459125797-dev-apps
           ports:
             - containerPort: 8080
           readinessProbe:

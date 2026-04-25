@@ -11,14 +11,19 @@ resources:
   - nginx.yaml
 
 images:
-  - name: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-nginx
+  - name: k8s-self-managed-503459125797-dev-nginx
+    newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-nginx
     newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
-  - name: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-apps
+  - name: k8s-self-managed-503459125797-dev-apps
+    newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-apps
     newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
-  - name: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-rabbitmq
+  - name: k8s-self-managed-503459125797-dev-rabbitmq
+    newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-rabbitmq
     newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
-  - name: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-memcached
+  - name: k8s-self-managed-503459125797-dev-memcached
+    newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-memcached
     newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
-  - name: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-mysql
+  - name: k8s-self-managed-503459125797-dev-mysql
+    newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-mysql
     newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
 
