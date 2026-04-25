@@ -70,12 +70,13 @@ jobs:
           tags: local/${{ matrix.image.name }}:${{ github.sha }}
 
       - name: Trivy image scan (block on HIGH/CRITICAL)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: local/${{ matrix.image.name }}:${{ github.sha }}
           severity: CRITICAL,HIGH
           format: table
           exit-code: "1"
+          version: v0.69.3
 
       - name: Push to ECR (with provenance + SBOM)
         id: push

@@ -26,13 +26,14 @@ jobs:
         run: mvn -q -Dmaven.test.skip=true package
 
       - name: Trivy FS scan (repo)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           scan-type: fs
           scan-ref: .
           severity: CRITICAL,HIGH
           format: table
           exit-code: "1"
+          version: v0.69.3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -47,10 +48,11 @@ jobs:
           tags: local/app:${{ github.sha }}
 
       - name: Trivy image scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: local/app:${{ github.sha }}
           severity: CRITICAL,HIGH
           format: table
           exit-code: "1"
+          version: v0.69.3
 
