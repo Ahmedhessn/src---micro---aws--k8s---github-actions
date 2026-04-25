@@ -41,7 +41,8 @@ jobs:
             GIT_SHA="${{ github.sha }}"
           fi
           echo "git_sha=$GIT_SHA" >> "$GITHUB_OUTPUT"
-          echo "image_tag=$GIT_SHA-${{ github.run_attempt }}" >> "$GITHUB_OUTPUT"
+          # ECR repos have immutable tags enabled; make the tag globally unique per workflow run.
+          echo "image_tag=$GIT_SHA-${{ github.run_id }}-${{ github.run_attempt }}" >> "$GITHUB_OUTPUT"
 
   build-push:
     needs: prep
