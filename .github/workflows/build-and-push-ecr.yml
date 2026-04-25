@@ -78,6 +78,7 @@ jobs:
           format: table
           exit-code: "1"
           version: v0.69.3
+          trivyignores: .trivyignore
 
       - name: Push to ECR (with provenance + SBOM)
         id: push
@@ -88,9 +89,14 @@ jobs:
           push: true
           provenance: true
           sbom: true
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:dev
+            # ECR repo has immutable tags enabled:
+            # - avoid static tags (e.g. dev/latest)
+            # - avoid reusing the raw commit SHA on re-runs
+            ${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:${{ github.sha }}-${{ github.run_attempt }}
 
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
@@ -105,6 +111,5 @@ jobs:
       - name: Output image
         run: |
           echo "Pushed and signed:"
-          echo "${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:${{ github.sha }}"
-          echo "${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:dev"
+          echo "${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:${{ github.sha }}-${{ github.run_attempt }}"
 
