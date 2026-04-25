@@ -10,13 +10,13 @@ resources:
 images:
 - name: k8s-self-managed-503459125797-dev-apps
   newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-apps
-  newTag: a217c67883f912e22eef8e07af76e8933c442ead-24939399767-1
+  newTag: 52d02eb8274ac6f0190af644d525ad04ddb48193-24939458805-1
 - name: k8s-self-managed-503459125797-dev-rabbitmq
   newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-rabbitmq
-  newTag: a217c67883f912e22eef8e07af76e8933c442ead-24939399767-1
+  newTag: 52d02eb8274ac6f0190af644d525ad04ddb48193-24939458805-1
 - name: k8s-self-managed-503459125797-dev-memcached
   newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-memcached
-  newTag: a217c67883f912e22eef8e07af76e8933c442ead-24939399767-1
+  newTag: 52d02eb8274ac6f0190af644d525ad04ddb48193-24939458805-1
 - name: k8s-self-managed-503459125797-dev-mysql
   newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-mysql
-  newTag: a217c67883f912e22eef8e07af76e8933c442ead-24939399767-1
+  newTag: 52d02eb8274ac6f0190af644d525ad04ddb48193-24939458805-1
