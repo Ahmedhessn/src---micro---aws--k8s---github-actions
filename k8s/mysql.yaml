@@ -16,6 +16,7 @@ metadata:
   name: mysql-pvc
   namespace: vprofile
 spec:
+  storageClassName: gp2
   accessModes: ["ReadWriteOnce"]
   resources:
     requests:
