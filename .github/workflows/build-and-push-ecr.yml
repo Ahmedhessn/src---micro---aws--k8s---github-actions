@@ -1,0 +1,109 @@
+name: build-and-push-ecr
+
+on:
+  push:
+    branches: [ "Dev" ]
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - name: nginx
+            repository: k8s-self-managed-503459125797-dev-nginx
+            context: .
+            dockerfile: docker/nginx/Dockerfile
+          - name: apps
+            repository: k8s-self-managed-503459125797-dev-apps
+            context: .
+            dockerfile: Dockerfile
+          - name: rabbitmq
+            repository: k8s-self-managed-503459125797-dev-rabbitmq
+            context: .
+            dockerfile: docker/rabbitmq/Dockerfile
+          - name: memcached
+            repository: k8s-self-managed-503459125797-dev-memcached
+            context: .
+            dockerfile: docker/memcached/Dockerfile
+          - name: mysql
+            repository: k8s-self-managed-503459125797-dev-mysql
+            context: .
+            dockerfile: docker/db/Dockerfile
+          # Your app image is Tomcat-based; publish same artifact to a "tomcat" repo too.
+          - name: tomcat
+            repository: k8s-self-managed-503459125797-dev-tomcat
+            context: .
+            dockerfile: Dockerfile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build (load for scan)
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.image.context }}
+          file: ${{ matrix.image.dockerfile }}
+          push: false
+          load: true
+          tags: local/${{ matrix.image.name }}:${{ github.sha }}
+
+      - name: Trivy image scan (block on HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: local/${{ matrix.image.name }}:${{ github.sha }}
+          severity: CRITICAL,HIGH
+          format: table
+          exit-code: "1"
+          version: v0.69.3
+
+      - name: Push to ECR (with provenance + SBOM)
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.image.context }}
+          file: ${{ matrix.image.dockerfile }}
+          push: true
+          provenance: true
+          sbom: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:dev
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign image (keyless via OIDC)
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          IMAGE="${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}@${{ steps.push.outputs.digest }}"
+          cosign sign --yes "${IMAGE}"
+
+      - name: Output image
+        run: |
+          echo "Pushed and signed:"
+          echo "${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:${{ github.sha }}"
+          echo "${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:dev"
+
