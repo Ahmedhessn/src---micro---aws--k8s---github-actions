@@ -16,6 +16,13 @@ spec:
       containers:
         - name: apps
           image: k8s-self-managed-503459125797-dev-apps
+          env:
+            - name: DB_HOST
+              value: mysql
+            - name: MEMCACHED_HOST
+              value: memcached
+            - name: RABBITMQ_HOST
+              value: rabbitmq
           ports:
             - containerPort: 8080
           readinessProbe:
