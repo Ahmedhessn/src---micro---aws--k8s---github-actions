@@ -46,11 +46,7 @@ jobs:
             # Vendor image may contain upstream CVEs; keep scanning but don't block pushes.
             trivy_exit_code: "0"
           # Your app image is Tomcat-based; publish same artifact to a "tomcat" repo too.
-          - name: tomcat
-            repository: k8s-self-managed-503459125797-dev-tomcat
-            context: .
-            dockerfile: Dockerfile
-            trivy_exit_code: "1"
+         
     steps:
       - name: Checkout
         uses: actions/checkout@v4
