@@ -156,7 +156,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.prep.outputs.git_sha }}
+          # Update manifests on the main branch (GitOps-style).
+          ref: main
+          fetch-depth: 0
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
