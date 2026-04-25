@@ -22,13 +22,17 @@ services:
       retries: 10
 
   mc01:
-    image: memcached:1.6-alpine
+    build:
+      context: .
+      dockerfile: docker/memcached/Dockerfile
     container_name: mc01
     ports:
       - "11211:11211"
 
   rmq01:
-    image: rabbitmq:3.13-management
+    build:
+      context: .
+      dockerfile: docker/rabbitmq/Dockerfile
     container_name: rmq01
     environment:
       RABBITMQ_DEFAULT_USER: test
