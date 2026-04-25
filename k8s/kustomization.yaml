@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: vprofile
+
+resources:
+  - mysql.yaml
+  - memcached.yaml
+  - rabbitmq.yaml
+  - apps.yaml
+  - nginx.yaml
+
+images:
+  - name: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-nginx
+    newTag: REPLACE_IMAGE_TAG
+  - name: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-apps
+    newTag: REPLACE_IMAGE_TAG
+  - name: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-rabbitmq
+    newTag: REPLACE_IMAGE_TAG
+  - name: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-memcached
+    newTag: REPLACE_IMAGE_TAG
+  - name: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-mysql
+    newTag: REPLACE_IMAGE_TAG
+
