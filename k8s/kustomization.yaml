@@ -11,14 +11,14 @@ resources:
   - nginx.yaml
 
 images:
-  - name: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-nginx
-    newTag: REPLACE_IMAGE_TAG
-  - name: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-apps
-    newTag: REPLACE_IMAGE_TAG
-  - name: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-rabbitmq
-    newTag: REPLACE_IMAGE_TAG
-  - name: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-memcached
-    newTag: REPLACE_IMAGE_TAG
-  - name: REPLACE_AWS_ACCOUNT_ID.dkr.ecr.REPLACE_AWS_REGION.amazonaws.com/k8s-self-managed-503459125797-dev-mysql
-    newTag: REPLACE_IMAGE_TAG
+  - name: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-nginx
+    newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
+  - name: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-apps
+    newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
+  - name: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-rabbitmq
+    newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
+  - name: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-memcached
+    newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
+  - name: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-mysql
+    newTag: b9ac549c7a896979ed8228a0e5f3afc2cb95c294-1
 
