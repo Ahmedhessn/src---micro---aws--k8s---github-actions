@@ -44,41 +44,155 @@ jobs:
           # ECR repos have immutable tags enabled; make the tag globally unique per workflow run.
           echo "image_tag=$GIT_SHA-${{ github.run_id }}-${{ github.run_attempt }}" >> "$GITHUB_OUTPUT"
 
-  build-push:
+  detect-changes:
     needs: prep
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      repositories: ${{ steps.set-matrix.outputs.repositories }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prep.outputs.git_sha }}
+          fetch-depth: 0
+
+      - name: Compute changed files
+        id: diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ needs.prep.outputs.git_sha }}"
+
+          # Compare against the first parent when possible (covers normal commits and merge commits).
+          if git cat-file -e "${SHA}^" 2>/dev/null; then
+            git diff --name-only "${SHA}^" "${SHA}" > changed_files.txt
+          else
+            # If this is the first commit in history, treat everything as changed.
+            git ls-files > changed_files.txt
+          fi
+
+          echo "Changed files:"
+          cat changed_files.txt || true
+
+      - name: Build dynamic image matrix
+        id: set-matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          changed() { grep -E -q "$1" changed_files.txt; }
+
+          apps=false
+          nginx=false
+          rabbitmq=false
+          memcached=false
+          mysql=false
+
+          # Apps image depends on the app source + pom + Dockerfile.
+          if changed '^(Dockerfile|pom\.xml|src/)'; then apps=true; fi
+
+          if changed '^docker/nginx/'; then nginx=true; fi
+          if changed '^docker/rabbitmq/'; then rabbitmq=true; fi
+          if changed '^docker/memcached/'; then memcached=true; fi
+          if changed '^docker/db/' || changed '^src/main/resources/db_backup\.sql$'; then mysql=true; fi
+
+          # Build matrix entries only for changed images.
+          matrix='{"image":[]}'
+          repos=()
+
+          if [ "$nginx" = "true" ]; then
+            matrix=$(python3 - <<'PY'
+import json,sys
+m=json.loads(sys.argv[1])
+m["image"].append({
+  "name":"nginx",
+  "repository":"k8s-self-managed-503459125797-dev-nginx",
+  "context":".",
+  "dockerfile":"docker/nginx/Dockerfile",
+  "trivy_exit_code":"1"
+})
+print(json.dumps(m))
+PY "$matrix")
+            repos+=("k8s-self-managed-503459125797-dev-nginx")
+          fi
+
+          if [ "$apps" = "true" ]; then
+            matrix=$(python3 - <<'PY'
+import json,sys
+m=json.loads(sys.argv[1])
+m["image"].append({
+  "name":"apps",
+  "repository":"k8s-self-managed-503459125797-dev-apps",
+  "context":".",
+  "dockerfile":"Dockerfile",
+  "trivy_exit_code":"1"
+})
+print(json.dumps(m))
+PY "$matrix")
+            repos+=("k8s-self-managed-503459125797-dev-apps")
+          fi
+
+          if [ "$rabbitmq" = "true" ]; then
+            matrix=$(python3 - <<'PY'
+import json,sys
+m=json.loads(sys.argv[1])
+m["image"].append({
+  "name":"rabbitmq",
+  "repository":"k8s-self-managed-503459125797-dev-rabbitmq",
+  "context":".",
+  "dockerfile":"docker/rabbitmq/Dockerfile",
+  "trivy_exit_code":"1"
+})
+print(json.dumps(m))
+PY "$matrix")
+            repos+=("k8s-self-managed-503459125797-dev-rabbitmq")
+          fi
+
+          if [ "$memcached" = "true" ]; then
+            matrix=$(python3 - <<'PY'
+import json,sys
+m=json.loads(sys.argv[1])
+m["image"].append({
+  "name":"memcached",
+  "repository":"k8s-self-managed-503459125797-dev-memcached",
+  "context":".",
+  "dockerfile":"docker/memcached/Dockerfile",
+  "trivy_exit_code":"1"
+})
+print(json.dumps(m))
+PY "$matrix")
+            repos+=("k8s-self-managed-503459125797-dev-memcached")
+          fi
+
+          if [ "$mysql" = "true" ]; then
+            matrix=$(python3 - <<'PY'
+import json,sys
+m=json.loads(sys.argv[1])
+m["image"].append({
+  "name":"mysql",
+  "repository":"k8s-self-managed-503459125797-dev-mysql",
+  "context":".",
+  "dockerfile":"docker/db/Dockerfile",
+  "trivy_exit_code":"0"
+})
+print(json.dumps(m))
+PY "$matrix")
+            repos+=("k8s-self-managed-503459125797-dev-mysql")
+          fi
+
+          # Output matrix + comma-separated repos (used to selectively bump tags in kustomization.yaml)
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          echo "repositories=$(IFS=,; echo "${repos[*]:-}")" >> "$GITHUB_OUTPUT"
+
+  build-push:
+    needs: [prep, detect-changes]
+    if: ${{ needs.detect-changes.outputs.matrix != '{"image":[]}' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        image:
-          - name: nginx
-            repository: k8s-self-managed-503459125797-dev-nginx
-            context: .
-            dockerfile: docker/nginx/Dockerfile
-            trivy_exit_code: "1"
-          - name: apps
-            repository: k8s-self-managed-503459125797-dev-apps
-            context: .
-            dockerfile: Dockerfile
-            trivy_exit_code: "1"
-          - name: rabbitmq
-            repository: k8s-self-managed-503459125797-dev-rabbitmq
-            context: .
-            dockerfile: docker/rabbitmq/Dockerfile
-            trivy_exit_code: "1"
-          - name: memcached
-            repository: k8s-self-managed-503459125797-dev-memcached
-            context: .
-            dockerfile: docker/memcached/Dockerfile
-            trivy_exit_code: "1"
-          - name: mysql
-            repository: k8s-self-managed-503459125797-dev-mysql
-            context: .
-            dockerfile: docker/db/Dockerfile
-            # Vendor image may contain upstream CVEs; keep scanning but don't block pushes.
-            trivy_exit_code: "0"
-          # Your app image is Tomcat-based; publish same artifact to a "tomcat" repo too.
-         
+        image: ${{ fromJson(needs.detect-changes.outputs.matrix).image }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -148,7 +262,8 @@ jobs:
           echo "${{ steps.login-ecr.outputs.registry }}/${{ matrix.image.repository }}:${{ needs.prep.outputs.image_tag }}"
 
   update-k8s:
-    needs: [prep, build-push]
+    needs: [prep, detect-changes, build-push]
+    if: ${{ needs.detect-changes.outputs.repositories != '' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -177,6 +292,7 @@ jobs:
           ACCOUNT_ID: ${{ steps.acct.outputs.account_id }}
           REGION: ${{ env.AWS_REGION }}
           IMAGE_TAG: ${{ needs.prep.outputs.image_tag }}
+          CHANGED_REPOSITORIES: ${{ needs.detect-changes.outputs.repositories }}
         run: |
           set -euo pipefail
           FILE="k8s/kustomization.yaml"
@@ -184,10 +300,10 @@ jobs:
           sed -i "s/REPLACE_AWS_ACCOUNT_ID/${ACCOUNT_ID}/g" "$FILE" || true
           sed -i "s/REPLACE_AWS_REGION/${REGION}/g" "$FILE" || true
 
-          # Always bump tags on every run (even after placeholders are gone).
+          # Bump tags ONLY for images that were rebuilt/pushed in this run.
           python3 -m pip install --user pyyaml
           python3 - <<'PY'
-          import os, sys
+          import os
           from pathlib import Path
           import yaml  # type: ignore
 
@@ -195,10 +311,15 @@ jobs:
           data = yaml.safe_load(file_path.read_text(encoding="utf-8"))
 
           image_tag = os.environ["IMAGE_TAG"]
+          changed_repos = set(filter(None, os.environ.get("CHANGED_REPOSITORIES", "").split(",")))
           images = data.get("images") or []
           for img in images:
-              # Set newTag for every image entry
-              img["newTag"] = image_tag
+              # Only bump the entries whose newName points to a repo that was rebuilt.
+              new_name = (img.get("newName") or "").strip()
+              # Example newName: 503....dkr.ecr.<region>.amazonaws.com/<repo>
+              repo = new_name.rsplit("/", 1)[-1] if "/" in new_name else new_name
+              if repo in changed_repos:
+                  img["newTag"] = image_tag
 
           file_path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
           PY
