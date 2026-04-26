@@ -167,7 +167,7 @@
                           Authentication auth = SecurityContextHolder.getContext().getAuthentication();
                           String username = auth != null ? auth.getName() : "to Hkhinfotech Social Media";
                       %>
-                      <p>Welcome, <%= username %>!</p>
+                      <p>Welcome, <%= username %>! <small class="text-muted">(deployment update)</small></p>
 
                       <br><br>
                       <i class="fa fa-tags" aria-hidden="true"></i>
