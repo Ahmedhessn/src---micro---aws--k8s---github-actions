@@ -6,7 +6,13 @@ resources:
 - memcached.yaml
 - rabbitmq.yaml
 - apps.yaml
+- nginx.yaml
 - ingress.yaml
+- hpa/mysql.yaml
+- hpa/memcached.yaml
+- hpa/rabbitmq.yaml
+- hpa/apps.yaml
+- hpa/nginx.yaml
 images:
 - name: k8s-self-managed-503459125797-dev-apps
   newName: 503459125797.dkr.ecr.us-east-1.amazonaws.com/k8s-self-managed-503459125797-dev-apps
